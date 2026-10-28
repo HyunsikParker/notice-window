@@ -54,7 +54,7 @@ date is shown with the rule that produced it. Notice Window is not legal advice.
 
 ![Ask the assistant to fill in the terms: it quotes the sentence behind each value and waits for your confirmation.](docs/images/8-rovo-fill-terms.jpg)
 
-The data in the screenshots is fictional sample data.
+The screenshots show fictional sample data.
 
 ## Try it
 
