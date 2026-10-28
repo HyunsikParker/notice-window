@@ -28,17 +28,21 @@ modules:
       prompt: resource:agent;prompt.txt
       conversationStarters:
         - Which contracts need notice in the next 30 days?
-        - When is the last day to cancel a contract?
+        - Fill in the contract terms from this page
         - What renews automatically next quarter, and for how much?
       actions:
         - list-notice-deadlines
         - get-contract-dates
+        - get-page-text
+        - set-contract-terms
   rovo:mcp:
     - key: notice-window-mcp
       name: Notice Window tools
       tools:
         - list-notice-deadlines
         - get-contract-dates
+        - get-page-text
+        - set-contract-terms
   action:
     - key: list-notice-deadlines
       name: List notice deadlines
@@ -82,6 +86,62 @@ modules:
           required: true
           description: Part of the contract page title or the counterparty name, for
             example Orbitline.
+    - key: get-page-text
+      name: Get page text
+      function: getPageText
+      actionVerb: GET
+      description: >
+        Returns the plain text of a Confluence contract page (the page the user is viewing, or one given by ID or exact
+        title) so the contract terms can be read from it, and says whether the page already has a terms table.
+      inputs:
+        page:
+          title: Page
+          type: string
+          required: false
+          description: The page ID or exact title. Leave empty for the page the user is viewing.
+    - key: set-contract-terms
+      name: Set contract terms
+      function: setContractTerms
+      actionVerb: UPDATE
+      description: >
+        Writes confirmed contract terms (start date, initial term, renewal, notice period, counterparty, annual value)
+        into the page properties table of a Confluence contract page and returns the notice day they lead to.
+      inputs:
+        page:
+          title: Page
+          type: string
+          required: false
+          description: The page ID or exact title. Leave empty for the page the user is viewing.
+        counterparty:
+          title: Counterparty
+          type: string
+          required: false
+          description: The other party, as named in the contract.
+        startDate:
+          title: Start date
+          type: string
+          required: true
+          description: The date the contract starts, as YYYY-MM-DD.
+        initialTerm:
+          title: Initial term
+          type: string
+          required: true
+          description: The length of the first term, for example 12 months.
+        renewal:
+          title: Renewal
+          type: string
+          required: true
+          description: Automatic with the renewal length, for example "Automatic, 12 months", or Manual.
+        noticePeriod:
+          title: Notice period
+          type: string
+          required: true
+          description: The notice needed to stop a renewal, for example 45 days.
+        annualValue:
+          title: Annual value
+          type: string
+          required: false
+          description: The yearly amount with its currency, for example USD 28,800.
   function:
     - key: resolver
       handler: index.handler
@@ -91,6 +151,10 @@ modules:
       handler: index.listNoticeDeadlines
     - key: getContractDates
       handler: index.getContractDates
+    - key: getPageText
+      handler: index.getPageText
+    - key: setContractTerms
+      handler: index.setContractTerms
 resources:
   - key: space
     path: src/frontend/space.jsx

@@ -93,7 +93,7 @@ function Sample({ onDone }) {
   return (
     <EmptyState
       header="No contract pages in this space yet"
-      description="Notice Window reads pages that have a page properties table with Start date, Initial term, Renewal and Notice period rows. Load seven fictional contracts to see how it works."
+      description="Notice Window reads pages that have a page properties table with Start date, Initial term, Renewal and Notice period rows. Load seven fictional contracts, plus one pasted as plain text for Rovo to fill in."
       primaryAction={<Button appearance="primary" isDisabled={state?.busy} onClick={load}>{state?.busy ? 'Creating pages…' : 'Load sample contracts'}</Button>}
     />
   );

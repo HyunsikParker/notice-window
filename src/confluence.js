@@ -38,7 +38,24 @@ export async function spacePages(spaceId) {
 
 export async function pageWithBody(pageId) {
   const p = await confluenceJson(route`/wiki/api/v2/pages/${pageId}?body-format=storage`);
-  return toPage(p, p._links?.base || '');
+  return { ...toPage(p, p._links?.base || ''), version: p.version?.number || 1, spaceId: p.spaceId };
+}
+
+export async function updatePageBody(page, storage, message) {
+  return confluenceJson(route`/wiki/api/v2/pages/${page.id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify({
+      id: String(page.id), status: 'current', title: page.title,
+      body: { representation: 'storage', value: storage },
+      version: { number: page.version + 1, message },
+    }),
+  });
+}
+
+export async function pageByTitle(spaceId, title) {
+  const data = await confluenceJson(route`/wiki/api/v2/pages?space-id=${spaceId}&title=${title}&status=current&limit=5`);
+  return data.results?.[0]?.id || null;
 }
 
 export async function createPage(spaceId, title, storage, parentId) {

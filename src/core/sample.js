@@ -14,6 +14,20 @@ export const SAMPLE = [
   { title: 'Pinecrest Travel: corporate travel desk', counterparty: 'Pinecrest Travel Desk', term: 12, renewal: 'Automatic, 12 months', notice: '', noticeIn: 70, value: 'USD 15,000', summary: 'Corporate travel booking. The notice period was never copied from the signed contract.' },
 ];
 
+// A contract pasted as text with no properties table yet, for trying "Fill in the contract terms from this page" in Rovo.
+export const RAW_SAMPLE = {
+  title: 'Helio Couriers: same-day delivery agreement',
+  paragraphs: [
+    'Fictional sample contract created by Notice Window, pasted as plain text so that Rovo can fill in its terms table.',
+    'This Delivery Services Agreement is made between Helio Couriers Ltd ("Supplier") and the Customer.',
+    '2.1 This Agreement commences on 1 March 2026 and continues for an initial term of twelve (12) months.',
+    '2.2 Thereafter it renews automatically for successive periods of twelve (12) months unless either party gives the other written notice of non-renewal at least forty-five (45) days before the end of the then-current term.',
+    '5.1 The Customer shall pay an annual fee of USD 28,800, invoiced monthly in arrears.',
+  ],
+};
+
+export const rawSampleBody = () => RAW_SAMPLE.paragraphs.map((t, i) => (i === 0 ? `<p><em>${esc(t)}</em></p>` : `<p>${esc(t)}</p>`)).join('');
+
 // The start date that puts the last notice day `noticeIn` days from today, for the sample's term and notice.
 export function sampleStart(s, today) {
   const noticeBy = addDays(today, s.noticeIn);
