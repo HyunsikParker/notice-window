@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { addMonths, daysBetween, formatDate, parseDate, parseDuration, shift } from '../src/core/dates.js';
+import { addMonths, daysBetween, formatDate, formatDuration, parseDate, parseDuration, shift } from '../src/core/dates.js';
 
 test('months keep the day where it exists', () => {
   assert.equal(addMonths('2025-01-31', 1), '2025-02-28');
@@ -25,4 +25,7 @@ test('durations and dates in the wording teams use', () => {
   assert.equal(parseDate('01/02/2025'), null);
   assert.equal(parseDate('2025-02-30'), null);
   assert.equal(formatDate('2026-11-09'), '9 Nov 2026');
+  assert.equal(formatDuration({ months: 12, days: 0 }), '12 months');
+  assert.equal(formatDuration({ months: 36, days: 0 }), '3 years');
+  assert.equal(formatDuration({ months: 0, days: 1 }), '1 day');
 });

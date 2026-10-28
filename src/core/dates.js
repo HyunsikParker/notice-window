@@ -58,7 +58,7 @@ export function parseDuration(text) {
 export function formatDuration(d) {
   if (!d) return '';
   if (d.days) return `${d.days} day${d.days === 1 ? '' : 's'}`;
-  if (d.months % 12 === 0) return `${d.months / 12} year${d.months === 12 ? '' : 's'}`;
+  if (d.months % 12 === 0 && d.months > 12) return `${d.months / 12} years`;
   return `${d.months} month${d.months === 1 ? '' : 's'}`;
 }
 
