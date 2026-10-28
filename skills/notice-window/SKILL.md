@@ -11,9 +11,9 @@ app's two tools and how to report what they return.
 
 ## Connect
 
-1. A site admin installs Notice Window and turns on its tools for external MCP clients: Atlassian Administration >
-   Apps > Sites > your site > Connected apps > Notice Window. External MCP access is part of Atlassian's Early Access
-   Program and is off by default.
+1. A site admin installs Notice Window and turns on "Expose tools to MCP-compatible apps" for it: Atlassian
+   Administration > Apps > Sites > your site > Connected apps > Notice Window > app details (the Confluence
+   installation). External MCP access is part of Atlassian's Early Access Program and is off by default.
 2. Add `https://mcp.atlassian.com/forge/92bd8b36-c090-408b-a969-200b7b6859c4` as a remote MCP server in your client and
    sign in. On the consent screen you choose the site. The tools run with your own Confluence permissions.
 
