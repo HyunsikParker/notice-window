@@ -1,0 +1,115 @@
+modules:
+  confluence:spacePage:
+    - key: notice-window-space
+      resource: space
+      resolver:
+        function: resolver
+      render: native
+      title: Notice Window
+      route: notice-window
+      icon: resource:icons;notice.svg
+  confluence:contentBylineItem:
+    - key: notice-window-byline
+      resource: byline
+      resolver:
+        function: resolver
+      render: native
+      title: Notice window
+      tooltip: Last day to give notice on this contract
+      icon: resource:icons;notice.svg
+      dynamicProperties:
+        function: bylineProps
+  rovo:agent:
+    - key: notice-window-agent
+      name: Notice Window Assistant
+      description: Tells legal, finance and procurement teams which contracts in a
+        Confluence space need notice soon, the last day to give it, and what
+        renews automatically if nobody acts.
+      prompt: resource:agent;prompt.txt
+      conversationStarters:
+        - Which contracts need notice in the next 30 days?
+        - When is the last day to cancel a contract?
+        - What renews automatically next quarter, and for how much?
+      actions:
+        - list-notice-deadlines
+        - get-contract-dates
+  rovo:mcp:
+    - key: notice-window-mcp
+      name: Notice Window tools
+      tools:
+        - list-notice-deadlines
+        - get-contract-dates
+  action:
+    - key: list-notice-deadlines
+      name: List notice deadlines
+      function: listNoticeDeadlines
+      actionVerb: GET
+      description: >
+        Lists the contracts in a Confluence space whose last day to give notice
+        falls within the next N days, with renewal dates, owners and annual
+        values, plus contracts whose notice day has passed and pages with
+        missing terms.
+      inputs:
+        spaceKey:
+          title: Space key
+          type: string
+          required: true
+          description: The key of the Confluence space that holds the contract pages, for
+            example LEGAL.
+        withinDays:
+          title: Within days
+          type: number
+          required: false
+          description: How many days ahead to look. Default 90.
+    - key: get-contract-dates
+      name: Get contract dates
+      function: getContractDates
+      actionVerb: GET
+      description: >
+        Returns the current term end, renewal date, last day to give notice and
+        any missing terms for the contracts in a Confluence space whose title or
+        counterparty matches the given text.
+      inputs:
+        spaceKey:
+          title: Space key
+          type: string
+          required: true
+          description: The key of the Confluence space that holds the contract pages, for
+            example LEGAL.
+        contract:
+          title: Contract
+          type: string
+          required: true
+          description: Part of the contract page title or the counterparty name, for
+            example Orbitline.
+  function:
+    - key: resolver
+      handler: index.handler
+    - key: bylineProps
+      handler: index.bylineProperties
+    - key: listNoticeDeadlines
+      handler: index.listNoticeDeadlines
+    - key: getContractDates
+      handler: index.getContractDates
+resources:
+  - key: space
+    path: src/frontend/space.jsx
+  - key: byline
+    path: src/frontend/byline.jsx
+  - key: agent
+    path: resources/agent
+  - key: icons
+    path: resources/icons
+app:
+  runtime:
+    name: nodejs24.x
+    memoryMB: 256
+    architecture: arm64
+  id: ari:cloud:ecosystem::app/92bd8b36-c090-408b-a969-200b7b6859c4
+permissions:
+  scopes:
+    - read:space:confluence
+    - read:page:confluence
+    - write:page:confluence
+    - read:jira-work
+    - write:jira-work
