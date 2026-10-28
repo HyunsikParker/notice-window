@@ -25,6 +25,10 @@ app's two tools and how to report what they return.
   notice due.
 - `get-contract-dates`, inputs `spaceKey` and `contract` (part of the page title or counterparty name): the dates and
   any missing terms for the matching contracts.
+- `get-page-text`, input `page` (page ID or exact title): the plain text of a contract page, to read its terms from.
+- `set-contract-terms`, inputs `page`, `startDate` (YYYY-MM-DD), `initialTerm`, `renewal` ("Automatic, <length>" or
+  "Manual"), `noticePeriod` and optional `counterparty` and `annualValue`: writes the terms into the page's
+  properties table and returns the notice day. It changes the page, so call it only after the user confirms the values.
 
 ## Answering
 
@@ -37,6 +41,10 @@ it) and report, in this order:
 3. Pages whose terms are incomplete, with what is missing.
 
 When the user asks about one contract, call `get-contract-dates`.
+
+When the user asks you to fill in the terms of a contract page, call `get-page-text`, find each value in the text, show
+it with the sentence it comes from and ask the user to confirm. Leave out any value the text does not state. Then call
+`set-contract-terms` and report the notice day it returns.
 
 ## Limits
 

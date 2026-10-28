@@ -37,10 +37,14 @@ date is shown with the rule that produced it. Notice Window is not legal advice.
   annual value; a warning with the value at stake in the next 30 days; and the pages whose terms are incomplete.
 - **Jira tasks**: one task per contract whose notice day falls in the next 30 days, assigned to the owner, due on the
   notice day and linked to the page. A label per contract and term means running it again skips existing tasks.
-- **Rovo agent "Notice Window Assistant"** and the same two actions as tools on the Atlassian MCP server:
-  `list-notice-deadlines` and `get-contract-dates`. [`skills/notice-window/SKILL.md`](skills/notice-window/SKILL.md)
-  tells a third-party agent how to use them.
-- **Load sample contracts** creates seven fictional contract pages dated relative to today, so every state shows up.
+- **Fill in terms with Rovo**: on a page that holds the contract as plain text, ask the Notice Window Assistant to fill
+  in the terms. It reads the page (`get-page-text`), quotes the sentence behind each value and asks you to confirm;
+  Rovo shows the values once more, then `set-contract-terms` writes the properties table and returns the notice day.
+- **Rovo agent "Notice Window Assistant"** and the same four actions as tools on the Atlassian MCP server:
+  `list-notice-deadlines`, `get-contract-dates`, `get-page-text` and `set-contract-terms`.
+  [`skills/notice-window/SKILL.md`](skills/notice-window/SKILL.md) tells a third-party agent how to use them.
+- **Load sample contracts** creates seven fictional contract pages dated relative to today, so every state shows up,
+  and one contract pasted as plain text to try the Rovo fill-in.
 
 ## Try it
 
@@ -51,8 +55,9 @@ date is shown with the rule that produced it. Notice Window is not legal advice.
 ## Architecture
 
 - `src/core/`: plain JavaScript, no network: `dates.js` (calendar arithmetic and wording such as "ninety (90) days"),
-  `properties.js` (page properties from storage format), `contracts.js` (terms, notice day and state), `tasks.js`
-  (task plan and description), `sample.js` (fictional data).
+  `properties.js` (page properties from storage format), `contracts.js` (terms, notice day and state), `terms.js`
+  (checks confirmed terms and writes them into the table), `tasks.js` (task plan and description), `sample.js`
+  (fictional data).
 - `src/index.js`: Forge resolvers, the byline title function and the Rovo actions. Confluence and Jira are called as the
   current user (`asUser`), so people see only the contracts they can open.
 - `src/frontend/`: UI Kit space page and byline popup.
