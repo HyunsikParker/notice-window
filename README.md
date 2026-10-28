@@ -46,6 +46,16 @@ date is shown with the rule that produced it. Notice Window is not legal advice.
 - **Load sample contracts** creates seven fictional contract pages dated relative to today, so every state shows up,
   and one contract pasted as plain text to try the Rovo fill-in.
 
+## Screenshots
+
+![The Notice Window space page: each contract's next step and time left, and the annual value of contracts due for notice in 30 days.](docs/images/1-space-overview.jpg)
+
+![The notice day in the contract page byline. The popup shows the term end, the renewal date and the rule behind the date.](docs/images/2-byline-and-popup.jpg)
+
+![Ask the assistant to fill in the terms: it quotes the sentence behind each value and waits for your confirmation.](docs/images/8-rovo-fill-terms.jpg)
+
+The data in the screenshots is fictional sample data.
+
 ## Try it
 
 1. Install the app on a Confluence site (add Jira for the tasks).
