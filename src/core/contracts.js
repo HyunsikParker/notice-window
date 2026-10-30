@@ -82,17 +82,25 @@ export function assess(c, today) {
 
   let renewsOn = null;
   let renewals = 0;
+  const nextTerm = auto ? (c.renewal.term || c.term) : null;
   if (c.start && c.term) {
     renewsOn = shift(c.start, c.term);
-    const next = auto ? (c.renewal.term || c.term) : null;
-    while (next && addDays(renewsOn, -1) < today && renewals < 600) {
-      renewsOn = shift(renewsOn, next);
-      renewals += 1;
-    }
   } else if (c.end) {
     renewsOn = addDays(c.end, 1);
   } else {
     findings.push('No start date and term, or end date: the term end cannot be worked out.');
+  }
+  if (renewsOn && auto) {
+    while (nextTerm && addDays(renewsOn, -1) < today && renewals < 600) {
+      renewsOn = shift(renewsOn, nextTerm);
+      renewals += 1;
+    }
+    if (addDays(renewsOn, -1) < today) {
+      findings.push(nextTerm
+        ? 'More than 600 renewals are needed to reach the current term. Update the start or end date to a known recent term.'
+        : 'The recorded term has ended. Add a renewal length to calculate the current term.');
+      renewsOn = null;
+    }
   }
   if (c.notice && c.term && approxDays(c.notice) >= approxDays(c.renewal?.term || c.term)) {
     findings.push(`Notice period (${formatDuration(c.notice)}) is as long as the term.`);
@@ -100,7 +108,6 @@ export function assess(c, today) {
 
   const termEnds = renewsOn ? addDays(renewsOn, -1) : null;
   const noticeBy = termEnds && c.notice ? shift(termEnds, c.notice, -1) : null;
-  const nextTerm = auto ? (c.renewal.term || c.term) : null;
   const nextNoticeBy = noticeBy && nextTerm ? shift(addDays(shift(renewsOn, nextTerm), -1), c.notice, -1) : null;
   const deadline = noticeBy || termEnds;
   let state;

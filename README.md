@@ -22,7 +22,9 @@ Notice period row). Notice Window understands these rows:
 | Notice period | 60 days, 3 months | the notice day |
 | Annual value | USD 48,000 | value at stake |
 
-An End date row can replace Start date and Initial term. Business days are not counted (they need a holiday calendar),
+An End date row can replace Start date and Initial term. For an automatic renewal, include the renewal length
+(for example, "Automatic, 12 months") so the app can calculate later terms after that end date.
+Business days are not counted (they need a holiday calendar),
 so a notice period in business days is flagged instead of guessed.
 
 The rule applied: an automatic renewal rolls forward to the term that contains today; the term ends the day before the
@@ -85,7 +87,8 @@ forge install --site <your-site>.atlassian.net -p Confluence -e development
 
 ## Credits
 
-Built with help from an AI coding assistant (Anthropic Claude). Sample data is fictional.
+Built with help from Anthropic Claude. OpenAI Codex corrected end-date renewal calculations and added regression tests
+on October 30, 2026. Both are AI coding assistants. Sample data is fictional.
 
 ## Licence
 

@@ -101,3 +101,62 @@ test('the sample shows every state, and tasks are planned once per notice day', 
   const adf = descriptionAdf(tasks[0]);
   assert.equal(adf.content.at(-1).content[1].marks[0].attrs.href, 'https://x/0');
 });
+
+test('an end-date contract advances through renewals and produces the current notice task', () => {
+  const contract = contractFromPage(page(9, [...base, ['End date', '2024-11-30'],
+    ['Renewal', 'Automatic, 12 months'], ['Notice period', '30 days'], ['Annual value', 'USD 12000']]));
+  const c = assess(contract, '2026-10-30');
+  assert.equal(c.renewals, 2);
+  assert.equal(c.termEnds, '2026-11-30');
+  assert.equal(c.renewsOn, '2026-12-01');
+  assert.equal(c.noticeBy, '2026-10-31');
+  assert.equal(c.daysLeft, 1);
+  assert.equal(c.state, 'act');
+  assert.deepEqual(valueAtStake([c], 30), { USD: 12000 });
+  const [task] = planTasks([c], 30);
+  assert.equal(task.dueDate, '2026-10-31');
+  assert.equal(task.label, 'notice-window-9-2026-10-31');
+  assert.match(task.summary, /by 31 Oct 2026.*renews on 1 Dec 2026/);
+  const closed = assess(contract, '2026-11-01');
+  assert.equal(closed.state, 'closed');
+  assert.equal(closed.nextNoticeBy, '2027-10-31');
+  assert.deepEqual(planTasks([closed], 30), []);
+});
+
+test('end-date renewals change term on the renewal day, including a leap year', () => {
+  const contract = contractFromPage(page(10, [...base, ['End date', '2023-02-28'],
+    ['Renewal', 'Automatic, 12 months'], ['Notice period', '30 days']]));
+  const lastDay = assess(contract, '2024-02-29');
+  assert.equal(lastDay.termEnds, '2024-02-29');
+  assert.equal(lastDay.renewsOn, '2024-03-01');
+  assert.equal(lastDay.noticeBy, '2024-01-30');
+  assert.equal(lastDay.state, 'closed');
+  const firstDay = assess(contract, '2024-03-01');
+  assert.equal(firstDay.termEnds, '2025-02-28');
+  assert.equal(firstDay.renewsOn, '2025-03-01');
+  assert.equal(firstDay.noticeBy, '2025-01-29');
+  assert.equal(firstDay.state, 'later');
+});
+
+test('an expired automatic end-date contract needs a renewal length before another term can be calculated', () => {
+  const contract = contractFromPage(page(11, [...base, ['End date', '2026-11-30'],
+    ['Renewal', 'Automatic'], ['Notice period', '30 days']]));
+  assert.equal(assess(contract, '2026-10-30').noticeBy, '2026-10-31');
+  const c = assess(contract, '2026-12-01');
+  assert.equal(c.state, 'incomplete');
+  assert.equal(c.termEnds, null);
+  assert.equal(c.renewsOn, null);
+  assert.equal(c.noticeBy, null);
+  assert.match(c.findings.join(' '), /renewal length/i);
+  assert.deepEqual(planTasks([c], 30), []);
+});
+
+test('hitting the renewal calculation limit flags incomplete dates rather than a stale current term', () => {
+  const c = assess(contractFromPage(page(12, [...base, ['Start date', '2020-01-01'],
+    ['Initial term', '1 day'], ['Renewal', 'Automatic, 1 day'], ['Notice period', '1 day']])), '2026-10-30');
+  assert.equal(c.state, 'incomplete');
+  assert.equal(c.termEnds, null);
+  assert.equal(c.noticeBy, null);
+  assert.match(c.findings.join(' '), /600/);
+  assert.deepEqual(planTasks([c], 30), []);
+});
